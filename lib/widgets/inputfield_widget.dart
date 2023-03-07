@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:gaiia_chat/controllers/message_controller.dart';
+import 'package:gaiia_chat/controllers/firebase_controller.dart';
+import 'package:gaiia_chat/models/chatroom_model.dart';
+// import 'package:gaiia_chat/controllers/message_controller.dart';
 import 'package:gaiia_chat/resources/colors.dart';
 import 'package:get/get.dart';
 
 class ChatInputField extends StatefulWidget {
-  const ChatInputField({super.key});
+  final ChatRoom cr;
+  const ChatInputField({super.key, required this.cr});
 
   @override
   State<ChatInputField> createState() => _ChatInputFieldState();
@@ -41,9 +44,14 @@ class _ChatInputFieldState extends State<ChatInputField> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () {
-                  Get.find<MessageController>().addMessage(inputcontroller.text);
-                  inputcontroller.clear();
+                onPressed: () async {
+                  Get.find<FirebaseController>().addMessage(
+                    widget.cr,
+                    {'messagetext': inputcontroller.text},
+                  ).whenComplete(
+                    () => inputcontroller.clear(),
+                  );
+                  // inputcontroller.clear();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: secondary,

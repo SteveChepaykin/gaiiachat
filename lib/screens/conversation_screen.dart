@@ -1,8 +1,12 @@
-import 'dart:html';
+// import 'dart:html';
 
 import 'package:flutter/material.dart';
+import 'package:gaiia_chat/controllers/firebase_controller.dart';
 import 'package:gaiia_chat/controllers/message_controller.dart';
+import 'package:gaiia_chat/models/chatroom_model.dart';
 import 'package:gaiia_chat/models/message_model.dart';
+import 'package:gaiia_chat/resources/messages_demo.dart';
+// import 'package:gaiia_chat/models/message_model.dart';
 import 'package:gaiia_chat/widgets/inputfield_widget.dart';
 import 'package:gaiia_chat/widgets/message_widget.dart';
 import 'package:get/get.dart';
@@ -17,6 +21,19 @@ class ConversationScreen extends StatefulWidget {
 }
 
 class _ConversationScreenState extends State<ConversationScreen> {
+  late final ChatRoom thisroom;
+
+  @override
+  void initState() async {
+    var firestore = Get.find<FirebaseController>();
+    bool created = await firestore.checkExistance();
+    if (!created) {
+      await firestore.makeChatRoom();
+    }
+    thisroom = await firestore.getMyRoom();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,14 +70,34 @@ class _ConversationScreenState extends State<ConversationScreen> {
         child: Column(
           children: [
             Expanded(
-              child: Obx(
-                () {
-                  var messages = Get.find<MessageController>().messages$;
+              // child: Obx(
+              //   () {
+              //     var messages = Get.find<MessageController>().messages$;
+              //     return ListView.builder(
+              //       itemCount: messages.length,
+              //       itemBuilder: (context, index) => MessageWidget(
+              //         messages[index],
+              //       ),
+              //     );
+              //   },
+              // ),
+              child: StreamBuilder<List<Message>>(
+                stream: Get.find<FirebaseController>().getRoomMessages(thisroom),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const CircularProgressIndicator();
+                  }
+                  if (snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No messages here yet.'));
+                  }
+                  List<Message> messages = snapshot.data!;
                   return ListView.builder(
                     itemCount: messages.length,
-                    itemBuilder: (context, index) => MessageWidget(
-                      messages[index],
-                    ),
+                    itemBuilder: (BuildContext context, int index) {
+                      return MessageWidget(
+                        messages[index],
+                      );
+                    },
                   );
                 },
               ),
@@ -82,7 +119,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 ],
               ),
             ),
-            const ChatInputField(),
+            ChatInputField(cr: thisroom),
           ],
         ),
       ),

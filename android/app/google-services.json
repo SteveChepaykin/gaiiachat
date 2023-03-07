@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "588301226396",
+    "project_id": "gaiiachat",
+    "storage_bucket": "gaiiachat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:588301226396:android:7013a06044b72cee0cb859",
+        "android_client_info": {
+          "package_name": "com.example.gaiia_chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "588301226396-er73dq7ovio798dogsghvmn8k4v63dfb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCUJpJHSBASIUnwLy9YX4dAXVkZGvp2z4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "588301226396-er73dq7ovio798dogsghvmn8k4v63dfb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "588301226396-8sl8ceqkojc10j6n764mem55k7dtr0r0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gaiiaChat"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

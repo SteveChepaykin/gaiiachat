@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:gaiia_chat/controllers/firebase_controller.dart';
 import 'package:gaiia_chat/screens/conversation_screen.dart';
 import 'package:gaiia_chat/widgets/specialelevatedbutton.dart';
+import 'package:get/get.dart';
 
 import '../resources/colors.dart';
 
@@ -13,6 +15,16 @@ class SigninScreen extends StatefulWidget {
 
 class _SigninScreenState extends State<SigninScreen> {
   final emailcontroller = TextEditingController();
+
+  void checkOrLoginGoogle() async {
+    String? res = await Get.find<FirebaseController>().signInUserGoogle();
+    if (res == null) return;
+    if (res.startsWith('##')) {
+      await Get.find<FirebaseController>().adduser({
+        'email': res.substring(2),
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +71,10 @@ class _SigninScreenState extends State<SigninScreen> {
               height: 20,
             ),
             SpecialElevatedButton(
-                action: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ConversationScreen()));
-                },
+                // action: () {
+                //   Navigator.push(context, MaterialPageRoute(builder: (context) => const ConversationScreen()));
+                // },
+                action: checkOrLoginGoogle,
                 child: Row(
                   children: const [
                     Icon(Icons.keyboard_command_key_rounded),
