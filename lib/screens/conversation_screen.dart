@@ -3,6 +3,7 @@ import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:gaiia_chat/controllers/message_controller.dart';
 import 'package:gaiia_chat/models/message_model.dart';
+import 'package:gaiia_chat/widgets/inputfield_widget.dart';
 import 'package:gaiia_chat/widgets/message_widget.dart';
 import 'package:get/get.dart';
 
@@ -16,8 +17,6 @@ class ConversationScreen extends StatefulWidget {
 }
 
 class _ConversationScreenState extends State<ConversationScreen> {
-  TextEditingController inputcontroller = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +25,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
         child: Column(
           children: [
             const CircleAvatar(
-              // backgroundColor: secondary,
               backgroundImage: AssetImage('images/blob.png'),
               radius: 40,
             ),
@@ -84,48 +82,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 ],
               ),
             ),
-            SizedBox(
-              height: 120,
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: black.withOpacity(0.3),),
-                    borderRadius: BorderRadius.circular(40)
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: inputcontroller,
-                          style: const TextStyle(fontSize: 18,),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Type or speak your message...',
-                            hintStyle: TextStyle(color: black.withOpacity(0.4), fontSize: 18),
-                            contentPadding: const EdgeInsets.all(15),
-                          ),
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Get.find<MessageController>().addMessage(inputcontroller.text);
-                          inputcontroller.clear();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: secondary,
-                          fixedSize: const Size(25, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                        ),
-                        child: const Icon(Icons.send),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            )
+            const ChatInputField(),
           ],
         ),
       ),

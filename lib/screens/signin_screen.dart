@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gaiia_chat/screens/conversation_screen.dart';
 import 'package:gaiia_chat/widgets/specialelevatedbutton.dart';
 
 import '../resources/colors.dart';
@@ -39,7 +40,9 @@ class _SigninScreenState extends State<SigninScreen> {
             ),
             const Spacer(),
             SpecialElevatedButton(
-              action: () {},
+              action: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ConversationScreen()));
+              },
               child: Row(
                 children: const [
                   Icon(Icons.apple),
@@ -56,7 +59,9 @@ class _SigninScreenState extends State<SigninScreen> {
               height: 20,
             ),
             SpecialElevatedButton(
-                action: () {},
+                action: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ConversationScreen()));
+                },
                 child: Row(
                   children: const [
                     Icon(Icons.keyboard_command_key_rounded),
@@ -93,16 +98,19 @@ class _SigninScreenState extends State<SigninScreen> {
                 controller: emailcontroller,
                 style: const TextStyle(fontSize: 20),
                 decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: 'Work email adress',
-                  hintStyle: TextStyle(color: black.withOpacity(0.4), fontSize: 20),
-                  contentPadding: const EdgeInsets.all(25)
-                ),
+                    border: InputBorder.none,
+                    hintText: 'Work email adress',
+                    hintStyle: TextStyle(color: black.withOpacity(0.4), fontSize: 20),
+                    contentPadding: const EdgeInsets.all(25)),
               ),
             ),
-            const SizedBox(height: 20,),
+            const SizedBox(
+              height: 20,
+            ),
             SpecialElevatedButton(
-              action: () {},
+              action: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ConversationScreen()));
+              },
               bg: secondary,
               fg: primary,
               child: const Text(
@@ -110,8 +118,12 @@ class _SigninScreenState extends State<SigninScreen> {
                 style: TextStyle(fontSize: 20),
               ),
             ),
-            const SizedBox(height: 30,),
-            const Divider(thickness: 1.5,),
+            const SizedBox(
+              height: 30,
+            ),
+            const Divider(
+              thickness: 1.5,
+            ),
             const Spacer(),
             const Text(
               'You are completely safe.',
