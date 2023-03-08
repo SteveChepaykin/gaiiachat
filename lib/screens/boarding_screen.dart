@@ -19,7 +19,7 @@ class BoardingScreen extends StatelessWidget {
             const Spacer(),
             const CircleAvatar(
               // backgroundColor: secondary,
-              backgroundImage: AssetImage('images/blob.png'),
+              backgroundImage: AssetImage('assets/blob.png'),
               radius: 90,
             ),
             const Spacer(),

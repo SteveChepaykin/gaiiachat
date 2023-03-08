@@ -21,28 +21,43 @@ class ConversationScreen extends StatefulWidget {
 }
 
 class _ConversationScreenState extends State<ConversationScreen> {
-  late final ChatRoom thisroom;
+  // late final ChatRoom thisroom;
+  final FirebaseController fc = Get.find<FirebaseController>();
 
-  @override
-  void initState() async {
-    var firestore = Get.find<FirebaseController>();
-    bool created = await firestore.checkExistance();
-    if (!created) {
-      await firestore.makeChatRoom();
-    }
-    thisroom = await firestore.getMyRoom();
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   var firestore = Get.find<FirebaseController>();
+  //   // bool created = await firestore.checkExistance();
+  //   // if (!created) {
+  //   //   await firestore.makeChatRoom();
+  //   // }
+  //   // thisroom = await firestore.getMyRoom();
+
+  //   // firestore.checkExistance().then((value) {
+  //   //   if (!value) {
+  //   //     firestore.makeChatRoom().whenComplete(() {
+  //   //       firestore.getMyRoom().then((value) {
+  //   //         thisroom = value;
+  //   //       });
+  //   //     });
+  //   //   } else {
+  //   //     firestore.getMyRoom().then((value) {
+  //   //       thisroom = value;
+  //   //     });
+  //   //   }
+  //   // });
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(150),
+        preferredSize: const Size.fromHeight(190),
         child: Column(
           children: [
             const CircleAvatar(
-              backgroundImage: AssetImage('images/blob.png'),
+              backgroundImage: AssetImage('assets/blob.png'),
               radius: 40,
             ),
             const SizedBox(
@@ -62,6 +77,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 ],
               ),
             ),
+            IconButton(onPressed: () async {
+              await fc.signOutUser();
+            }, icon: Icon(Icons.logout))
           ],
         ),
       ),
@@ -82,7 +100,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
               //   },
               // ),
               child: StreamBuilder<List<Message>>(
-                stream: Get.find<FirebaseController>().getRoomMessages(thisroom),
+                stream: Get.find<FirebaseController>().getRoomMessages(fc.currentRoom!),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const CircularProgressIndicator();
@@ -119,7 +137,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 ],
               ),
             ),
-            ChatInputField(cr: thisroom),
+            ChatInputField(cr: fc.currentRoom!),
           ],
         ),
       ),

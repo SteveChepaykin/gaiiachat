@@ -17,13 +17,13 @@ class _SigninScreenState extends State<SigninScreen> {
   final emailcontroller = TextEditingController();
 
   void checkOrLoginGoogle() async {
-    String? res = await Get.find<FirebaseController>().signInUserGoogle();
-    if (res == null) return;
-    if (res.startsWith('##')) {
-      await Get.find<FirebaseController>().adduser({
-        'email': res.substring(2),
-      });
-    }
+    await Get.find<FirebaseController>().signInUserGoogle();
+    // if (res == null) return;
+    // if (res.startsWith('##')) {
+    //   await Get.find<FirebaseController>().adduser({
+    //     'email': res.substring(2),
+    //   });
+    // }
   }
 
   @override

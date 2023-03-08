@@ -6,11 +6,11 @@ class MessageController extends GetxController {
   late var messages$ = messages.obs;
 
   void init() {
-    messages.addAll([
-      Message.fromMap('0', {'sendbyhuman': false, 'messagetext': 'Hi, Paolo. How can I help you?'}),
-      Message.fromMap('1', {'sendbyhuman': true, 'messagetext': 'Hi GAIIA please send me presentation about innovative GAIIA Charity tools'}),
-      Message.fromMap('2', {'sendbyhuman': false, 'messagetext': 'Sure. Sending...'}),
-    ]);
+    // messages.addAll([
+    //   Message.fromMap('0', {'sendbyhuman': false, 'messagetext': 'Hi, Paolo. How can I help you?'}),
+    //   Message.fromMap('1', {'sendbyhuman': true, 'messagetext': 'Hi GAIIA please send me presentation about innovative GAIIA Charity tools'}),
+    //   Message.fromMap('2', {'sendbyhuman': false, 'messagetext': 'Sure. Sending...'}),
+    // ]);
     messages$.value = messages;
     messages$.refresh();
   }
