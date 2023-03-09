@@ -1,3 +1,4 @@
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:gaiia_chat/controllers/firebase_controller.dart';
 import 'package:gaiia_chat/screens/conversation_screen.dart';
@@ -18,12 +19,32 @@ class _SigninScreenState extends State<SigninScreen> {
 
   void checkOrLoginGoogle() async {
     await Get.find<FirebaseController>().signInUserGoogle();
-    // if (res == null) return;
-    // if (res.startsWith('##')) {
-    //   await Get.find<FirebaseController>().adduser({
-    //     'email': res.substring(2),
-    //   });
-    // }
+  }
+
+  void loginEmailLink() async {
+    if(emailcontroller.text != '') {
+      await Get.find<FirebaseController>().signInUserEmailLink(emailcontroller.text);
+    }
+  }
+
+  @override
+  void didChangeAppLifeCycleState(AppLifecycleState state) async {
+    try {
+      FirebaseDynamicLinks.instance.onLink.listen((dlink) {
+        final Uri deepLink = dlink.link;
+        Get.find<FirebaseController>().handleLink(deepLink, emailcontroller.text);
+        // Navigator.pushNamed(context, deepLink.path);
+      });
+
+      final PendingDynamicLinkData? data = await FirebaseDynamicLinks.instance.getInitialLink();
+      final Uri? deepLink = data?.link;
+
+      if (deepLink != null) {
+        print(deepLink.userInfo);
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -121,9 +142,10 @@ class _SigninScreenState extends State<SigninScreen> {
               height: 20,
             ),
             SpecialElevatedButton(
-              action: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const ConversationScreen()));
-              },
+              // action: () {
+              //   Navigator.push(context, MaterialPageRoute(builder: (context) => const ConversationScreen()));
+              // },
+              action: loginEmailLink,
               bg: secondary,
               fg: primary,
               child: const Text(

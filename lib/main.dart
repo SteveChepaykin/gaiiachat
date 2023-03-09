@@ -1,10 +1,8 @@
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:gaiia_chat/controllers/firebase_controller.dart';
 import 'package:gaiia_chat/controllers/message_controller.dart';
-import 'package:gaiia_chat/models/user_model.dart';
-import 'package:gaiia_chat/screens/boarding_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:gaiia_chat/screens/conversation_screen.dart';
 import 'firebase_options.dart';
 import 'package:get/get.dart';
 
@@ -13,6 +11,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
+  
   var mescont = MessageController();
   var fcont = FirebaseController();
   // fcont.listenUserAuthState();
