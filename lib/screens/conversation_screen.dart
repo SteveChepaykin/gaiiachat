@@ -83,6 +83,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   List<Message> messages = snapshot.data!;
                   return ListView.builder(
                     itemCount: messages.length,
+                    reverse: true,
                     itemBuilder: (BuildContext context, int index) {
                       return MessageWidget(
                         messages[index],

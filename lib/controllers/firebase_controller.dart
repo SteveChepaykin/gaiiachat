@@ -255,7 +255,7 @@ class FirebaseController extends GetxController {
       }
       // if (lm.length >= 2) {
       lm.sort((m1, m2) {
-        return m1.timeSent.compareTo(m2.timeSent);
+        return m2.timeSent.compareTo(m1.timeSent);
       });
       // }
       return lm;
