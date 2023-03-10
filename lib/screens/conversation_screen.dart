@@ -1,11 +1,7 @@
 // import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:gaiia_chat/controllers/firebase_controller.dart';
-import 'package:gaiia_chat/controllers/message_controller.dart';
-import 'package:gaiia_chat/models/chatroom_model.dart';
 import 'package:gaiia_chat/models/message_model.dart';
-import 'package:gaiia_chat/resources/messages_demo.dart';
 // import 'package:gaiia_chat/models/message_model.dart';
 import 'package:gaiia_chat/widgets/inputfield_widget.dart';
 import 'package:gaiia_chat/widgets/message_widget.dart';
@@ -21,65 +17,52 @@ class ConversationScreen extends StatefulWidget {
 }
 
 class _ConversationScreenState extends State<ConversationScreen> {
-  // late final ChatRoom thisroom;
   final FirebaseController fc = Get.find<FirebaseController>();
-
-  // @override
-  // void initState() {
-  //   var firestore = Get.find<FirebaseController>();
-  //   // bool created = await firestore.checkExistance();
-  //   // if (!created) {
-  //   //   await firestore.makeChatRoom();
-  //   // }
-  //   // thisroom = await firestore.getMyRoom();
-
-  //   // firestore.checkExistance().then((value) {
-  //   //   if (!value) {
-  //   //     firestore.makeChatRoom().whenComplete(() {
-  //   //       firestore.getMyRoom().then((value) {
-  //   //         thisroom = value;
-  //   //       });
-  //   //     });
-  //   //   } else {
-  //   //     firestore.getMyRoom().then((value) {
-  //   //       thisroom = value;
-  //   //     });
-  //   //   }
-  //   // });
-  //   super.initState();
-  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(190),
-        child: Column(
+        preferredSize: const Size.fromHeight(137),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CircleAvatar(
-              backgroundImage: AssetImage('assets/blob.png'),
-              radius: 40,
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            Text(
-              'GAIIA AI',
-              style: TextStyle(
-                fontSize: 52,
-                color: secondary,
-                shadows: [
-                  Shadow(
-                    offset: const Offset(0, 4),
-                    blurRadius: 4,
-                    color: Colors.grey.shade400,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const CircleAvatar(
+                  backgroundImage: AssetImage('assets/blob.png'),
+                  radius: 40,
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  'GAIIA AI',
+                  style: TextStyle(
+                    fontSize: 52,
+                    color: secondary,
+                    shadows: [
+                      Shadow(
+                        offset: const Offset(0, 4),
+                        blurRadius: 4,
+                        color: Colors.grey.shade400,
+                      ),
+                    ],
                   ),
-                ],
+                ),
+              ],
+            ).paddingOnly(top: 10, left: 20),
+            IconButton(
+              onPressed: () async {
+                await fc.signOutUser();
+              },
+              icon: const Icon(
+                Icons.logout,
+                color: secondary,
               ),
             ),
-            IconButton(onPressed: () async {
-              await fc.signOutUser();
-            }, icon: Icon(Icons.logout))
           ],
         ),
       ),
@@ -88,19 +71,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
         child: Column(
           children: [
             Expanded(
-              // child: Obx(
-              //   () {
-              //     var messages = Get.find<MessageController>().messages$;
-              //     return ListView.builder(
-              //       itemCount: messages.length,
-              //       itemBuilder: (context, index) => MessageWidget(
-              //         messages[index],
-              //       ),
-              //     );
-              //   },
-              // ),
               child: StreamBuilder<List<Message>>(
-                stream: Get.find<FirebaseController>().getRoomMessages(fc.currentRoom!),
+                stream: Get.find<FirebaseController>().getRoomMessagesStream(fc.currentRoom!),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const CircularProgressIndicator();
@@ -118,23 +90,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     },
                   );
                 },
-              ),
-            ),
-            SizedBox(
-              height: 50,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: const [
-                  SpecialChip(text: 'Flag'),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  SpecialChip(text: 'Reply'),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  SpecialChip(text: 'Forward')
-                ],
               ),
             ),
             ChatInputField(cr: fc.currentRoom!),

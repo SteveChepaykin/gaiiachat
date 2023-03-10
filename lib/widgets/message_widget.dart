@@ -30,11 +30,11 @@ class MessageWidget extends StatelessWidget {
                     bottomRight: Radius.circular(20),
                     topRight: Radius.circular(20),
                   ),
-            color: message.sentByHuman ? secondary : primary,
+            color: message.sentByHuman ? secondary : const Color.fromARGB(255, 236, 236, 236),
           ),
           padding: const EdgeInsets.all(15),
           child: Text(
-            message.messagetext,
+            message.messagetext.trim(),
             style: TextStyle(fontSize: 18, color: message.sentByHuman ? primary : black),
           ),
         ),

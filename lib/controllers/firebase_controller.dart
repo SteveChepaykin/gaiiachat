@@ -1,6 +1,7 @@
+import 'dart:async';
+import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:gaiia_chat/models/chatroom_model.dart';
 import 'package:gaiia_chat/models/message_model.dart';
 import 'package:gaiia_chat/models/user_model.dart';
@@ -15,14 +16,10 @@ class FirebaseController extends GetxController {
 
   UserModel? currentUser;
   ChatRoom? currentRoom;
-  // late Rx<UserModel?> currentUser$;
-  // late Rx<ChatRoom?> currentRoom$;
 
   FirebaseController() {
     _firestore = FirebaseFirestore.instance;
     _firebaseAuth = FirebaseAuth.instance;
-    // currentUser$ = currentUser.obs;
-    // currentRoom$ = currentRoom.obs;
   }
 
   Future<UserModel?> getUserByEmail(String email) async {
@@ -45,8 +42,8 @@ class FirebaseController extends GetxController {
 
   Future<String?> signInUserGoogle() async {
     final gsi = GoogleSignIn(
-      clientId: '588301226396-8eh4l92na91ckfg6co4s8vcgh492uc60.apps.googleusercontent.com',
-      // serverClientId: '588301226396-8eh4l92na91ckfg6co4s8vcgh492uc60.apps.googleusercontent.com',
+      // clientId: '588301226396-8eh4l92na91ckfg6co4s8vcgh492uc60.apps.googleusercontent.com',
+      serverClientId: '588301226396-8eh4l92na91ckfg6co4s8vcgh492uc60.apps.googleusercontent.com',
       scopes: [
         'email',
         'https://www.googleapis.com/auth/contacts.readonly',
@@ -64,11 +61,6 @@ class FirebaseController extends GetxController {
     } on FirebaseAuthException catch (_) {
       return 'login google error';
     }
-    // var user = await getUserByEmail(googleUser.email);
-    // user ??= await addUser(googleUser.email);
-    // var room = await getMyRoom(user);
-    // room ??= await makeChatRoom(user);
-    // currentRoom = room;
     return null;
   }
 
@@ -132,8 +124,7 @@ class FirebaseController extends GetxController {
   }
 
   Future<void> handleLink(Uri? link, String email) async {
-    // if (FirebaseAuth.instance.isSignInWithEmailLink(emailLink)) {
-    if(link != null) {
+    if (link != null) {
       try {
         await _firebaseAuth.signInWithEmailLink(email: email, emailLink: link.toString());
         print('Successfully signed in with email link!');
@@ -206,18 +197,56 @@ class FirebaseController extends GetxController {
     return room;
   }
 
-  Future<void> addMessage(ChatRoom cr, Map<String, dynamic> m) async {
+  Future<void> addMessage(
+    ChatRoom cr,
+    Map<String, dynamic> messagemap,
+    OpenAI? openai,
+    // ChatGPT? chatgpt,
+  ) async {
     var a = _firestore.collection('chatrooms').doc(cr.id);
-    // http.Response response = await http.get(Uri.parse("http://worldtimeapi.org/api/timezone/Europe/London"));
-    // var file = jsonDecode(response.body);
     await a.collection('messages').add({
       'sentbyhuman': true,
-      'messagetext': m['messagetext'],
+      'messagetext': messagemap['messagetext'],
+      'timestamp': DateTime.now(),
+    });
+
+    // var completion = await chatgpt!.textCompletion(
+    //   request: CompletionRequest(
+    //     prompt: messagemap['messagetext'],
+    //     maxTokens: 100,
+    //   ),
+    // );
+
+    // await a.collection('messages').add({
+    //   'sentbyhuman': false,
+    //   'messagetext': completion!.choices!.first.text,
+    //   'timestamp': DateTime.now(),
+    // });
+
+    var roommes = await getRoomMessages(cr);
+    var messages = roommes
+        .map((message) => {
+              'role': message.sentByHuman ? 'user' : 'assistant',
+              'content': message.messagetext,
+            })
+        .toList();
+
+    var request = ChatCompleteText(
+      messages: messages,
+      model: kChatGptTurbo0301Model,
+      maxToken: 100,
+    );
+
+    var completion = await openai!.onChatCompletion(request: request);
+
+    await a.collection('messages').add({
+      'sentbyhuman': false,
+      'messagetext': completion!.choices.first.message.content,
       'timestamp': DateTime.now(),
     });
   }
 
-  Stream<List<Message>> getRoomMessages(ChatRoom cr) {
+  Stream<List<Message>> getRoomMessagesStream(ChatRoom cr) {
     return _firestore.collection('chatrooms').doc(cr.id).collection('messages').snapshots().map((event) {
       List<Message> lm = [];
       for (var m in event.docs) {
@@ -231,5 +260,14 @@ class FirebaseController extends GetxController {
       // }
       return lm;
     });
+  }
+
+  Future<List<Message>> getRoomMessages(ChatRoom cr) async {
+    var docs = await _firestore.collection('chatrooms').doc(cr.id).collection('messages').get();
+    var messages = docs.docs.map((e) => Message.fromMap(e.id, e.data())).toList();
+    messages.sort((m1, m2) {
+      return m1.timeSent.compareTo(m2.timeSent);
+    });
+    return messages;
   }
 }
