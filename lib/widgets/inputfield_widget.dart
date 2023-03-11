@@ -8,6 +8,8 @@ import 'package:gaiia_chat/resources/api.dart';
 import 'package:gaiia_chat/resources/colors.dart';
 import 'package:gaiia_chat/screens/conversation_screen.dart';
 import 'package:get/get.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class ChatInputField extends StatefulWidget {
   final ChatRoom cr;
@@ -21,8 +23,42 @@ class _ChatInputFieldState extends State<ChatInputField> {
   TextEditingController inputcontroller = TextEditingController();
 
   final openAi = OpenAI.instance.build(token: apiKey);
-
   bool waitingAnswer = false;
+
+  final SpeechToText stt = SpeechToText();
+  bool sttenabled = false;
+
+  @override
+  void initState() {
+    initSST();
+    super.initState();
+  }
+
+  void initSST() async {
+    sttenabled = await stt.initialize();
+    setState(() {});
+  }
+
+  void startListen() async {
+    await stt.listen(
+      onResult: _onSpeechResult,
+      partialResults: false,
+      pauseFor: const Duration(seconds: 7),
+    );
+    setState(() {});
+  }
+
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      inputcontroller.text = result.recognizedWords;
+    });
+    // print(result.recognizedWords);
+  }
+
+  void stopListen() async {
+    await stt.stop();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,29 +120,65 @@ class _ChatInputFieldState extends State<ChatInputField> {
                         hintStyle: TextStyle(color: black.withOpacity(0.4), fontSize: 18),
                         contentPadding: const EdgeInsets.all(15),
                       ),
+                      textInputAction: TextInputAction.done,
+                      onEditingComplete: waitingAnswer
+                          ? null
+                          : () async {
+                              setState(() {
+                                waitingAnswer = true;
+                              });
+                              Get.find<FirebaseController>()
+                                  .addMessage(
+                                widget.cr,
+                                {'messagetext': inputcontroller.text},
+                                openAi,
+                              )
+                                  .whenComplete(
+                                () {
+                                  setState(() {
+                                    waitingAnswer = false;
+                                    inputcontroller.clear();
+                                  });
+                                },
+                              );
+                            },
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: waitingAnswer ? null : () async {
-                      setState(() {
-                        waitingAnswer = true;
-                      });
-                      Get.find<FirebaseController>()
-                          .addMessage(
-                        widget.cr,
-                        {'messagetext': inputcontroller.text},
-                        openAi,
-                      )
-                          .whenComplete(
-                        () {
-                          setState(() {
-                            waitingAnswer = false;
-                            inputcontroller.clear();
-                          });
-                        },
-                      );
-                      // inputcontroller.clear();
-                    },
+                    // onPressed: waitingAnswer
+                    //     ? null
+                    //     : () async {
+                    //         setState(() {
+                    //           waitingAnswer = true;
+                    //         });
+                    //         Get.find<FirebaseController>()
+                    //             .addMessage(
+                    //           widget.cr,
+                    //           {'messagetext': inputcontroller.text},
+                    //           openAi,
+                    //         )
+                    //             .whenComplete(
+                    //           () {
+                    //             setState(() {
+                    //               waitingAnswer = false;
+                    //               inputcontroller.clear();
+                    //             });
+                    //           },
+                    //         );
+                    //         // inputcontroller.clear();
+                    //       },
+                    // onLongPress: waitingAnswer
+                    //     ? null
+                    //     : () {
+                    //         if (sttenabled && stt.isNotListening) {
+                    //           startListen();
+                    //         }
+                    //       },
+                    onPressed: waitingAnswer
+                        ? null
+                        : sttenabled ? () {
+                            stt.isNotListening ? startListen() : stopListen();
+                          } : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: secondary,
                       fixedSize: const Size(25, 50),
@@ -114,7 +186,7 @@ class _ChatInputFieldState extends State<ChatInputField> {
                         borderRadius: BorderRadius.circular(40),
                       ),
                     ),
-                    child: const Icon(Icons.send),
+                    child: Icon(stt.isNotListening ? Icons.mic : Icons.mic_off),
                   ),
                 ],
               ),

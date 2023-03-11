@@ -231,6 +231,11 @@ class FirebaseController extends GetxController {
             })
         .toList();
 
+    messages.insert(0, {
+              'role': 'system',
+              'content': 'You are a helpful assistant. Your name is GAIIA.',
+            });
+
     var request = ChatCompleteText(
       messages: messages,
       model: kChatGptTurbo0301Model,
