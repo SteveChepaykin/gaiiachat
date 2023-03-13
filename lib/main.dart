@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:gaiia_chat/controllers/firebase_controller.dart';
+import 'package:gaiia_chat/controllers/http_controller.dart';
 import 'package:gaiia_chat/controllers/message_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -15,10 +19,15 @@ void main() async {
   
   var mescont = MessageController();
   var fcont = FirebaseController();
+  var httpcont = HttpController();
   // fcont.listenUserAuthState();
   mescont.init();
   Get.put<MessageController>(mescont);
   Get.put<FirebaseController>(fcont);
+  Get.put<HttpController>(httpcont);
+  final ap = AudioPlayer();
+  Uint8List audio = await httpcont.generateSpeechFromPhrase('HELLO');
+  ap.play(BytesSource(audio));
   runApp(const MyApp());
 }
 

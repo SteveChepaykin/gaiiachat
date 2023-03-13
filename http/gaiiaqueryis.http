@@ -1,0 +1,15 @@
+GET https://api.elevenlabs.io/v1/voices
+xi-api-key: 7e430eb9debac16c51b09b849bc3109a
+
+POST https://api.elevenlabs.io/v1/text-to-speech/bmtTy0kLjUiTeam6zbRp
+xi-api-key: 7e430eb9debac16c51b09b849bc3109a
+content-type: application/json
+accept: audio/mpeg
+
+{
+  "text": "hello my name is quite long so i will forget it.",
+  "voice_settings": {
+    "stability": 0,
+    "similarity_boost": 0
+  }
+}
