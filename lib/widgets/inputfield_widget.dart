@@ -1,4 +1,5 @@
 // import 'package:chat_gpt_api/chat_gpt.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:gaiia_chat/controllers/firebase_controller.dart';
@@ -13,7 +14,8 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 class ChatInputField extends StatefulWidget {
   final ChatRoom cr;
-  const ChatInputField({super.key, required this.cr});
+  final AudioPlayer ap;
+  const ChatInputField({super.key, required this.cr, required this.ap});
 
   @override
   State<ChatInputField> createState() => _ChatInputFieldState();
@@ -52,7 +54,6 @@ class _ChatInputFieldState extends State<ChatInputField> {
     setState(() {
       inputcontroller.text = result.recognizedWords;
     });
-    // print(result.recognizedWords);
   }
 
   void stopListen() async {
@@ -106,6 +107,7 @@ class _ChatInputFieldState extends State<ChatInputField> {
                   ),
                   borderRadius: BorderRadius.circular(40)),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Expanded(
                     child: TextField(
@@ -120,65 +122,41 @@ class _ChatInputFieldState extends State<ChatInputField> {
                         hintStyle: TextStyle(color: black.withOpacity(0.4), fontSize: 18),
                         contentPadding: const EdgeInsets.all(15),
                       ),
-                      textInputAction: TextInputAction.done,
-                      onEditingComplete: waitingAnswer
-                          ? null
-                          : () async {
-                              setState(() {
-                                waitingAnswer = true;
-                              });
-                              Get.find<FirebaseController>()
-                                  .addMessage(
-                                widget.cr,
-                                {'messagetext': inputcontroller.text},
-                                openAi,
-                              )
-                                  .whenComplete(
-                                () {
-                                  setState(() {
-                                    waitingAnswer = false;
-                                    inputcontroller.clear();
-                                  });
-                                },
-                              );
-                            },
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                      // textInputAction: TextInputAction.done,
+                      // onEditingComplete: waitingAnswer
+                      //     ? null
+                      //     : () async {
+                      //         setState(() {
+                      //           waitingAnswer = true;
+                      //         });
+                      //         Get.find<FirebaseController>()
+                      //             .addMessage(
+                      //           widget.cr,
+                      //           {'messagetext': inputcontroller.text},
+                      //           openAi,
+                      //         )
+                      //             .whenComplete(
+                      //           () {
+                      //             setState(() {
+                      //               waitingAnswer = false;
+                      //               inputcontroller.clear();
+                      //             });
+                      //           },
+                      //         );
+                      //       },
                     ),
                   ),
-                  ElevatedButton(
-                    // onPressed: waitingAnswer
-                    //     ? null
-                    //     : () async {
-                    //         setState(() {
-                    //           waitingAnswer = true;
-                    //         });
-                    //         Get.find<FirebaseController>()
-                    //             .addMessage(
-                    //           widget.cr,
-                    //           {'messagetext': inputcontroller.text},
-                    //           openAi,
-                    //         )
-                    //             .whenComplete(
-                    //           () {
-                    //             setState(() {
-                    //               waitingAnswer = false;
-                    //               inputcontroller.clear();
-                    //             });
-                    //           },
-                    //         );
-                    //         // inputcontroller.clear();
-                    //       },
-                    // onLongPress: waitingAnswer
-                    //     ? null
-                    //     : () {
-                    //         if (sttenabled && stt.isNotListening) {
-                    //           startListen();
-                    //         }
-                    //       },
+                  if(inputcontroller.text == '') ElevatedButton(
                     onPressed: waitingAnswer
                         ? null
-                        : sttenabled ? () {
-                            stt.isNotListening ? startListen() : stopListen();
-                          } : null,
+                        : sttenabled
+                            ? () {
+                                stt.isNotListening ? startListen() : stopListen();
+                              }
+                            : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: secondary,
                       fixedSize: const Size(25, 50),
@@ -187,6 +165,39 @@ class _ChatInputFieldState extends State<ChatInputField> {
                       ),
                     ),
                     child: Icon(stt.isNotListening ? Icons.mic : Icons.mic_off),
+                  ),
+                  if(inputcontroller.text != '') ElevatedButton(
+                    onPressed: waitingAnswer
+                        ? null
+                        : () async {
+                            setState(() {
+                              waitingAnswer = true;
+                            });
+                            Get.find<FirebaseController>()
+                                .addMessage(
+                              widget.cr,
+                              {'messagetext': inputcontroller.text},
+                              openAi,
+                              widget.ap,
+                            )
+                                .whenComplete(
+                              () {
+                                setState(() {
+                                  waitingAnswer = false;
+                                  inputcontroller.clear();
+                                });
+                              },
+                            );
+                            // inputcontroller.clear();
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: secondary,
+                      fixedSize: const Size(25, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                    ),
+                    child: const Icon(Icons.send),
                   ),
                 ],
               ),

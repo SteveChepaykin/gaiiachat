@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gaiia_chat/controllers/http_controller.dart';
+import 'package:gaiia_chat/controllers/sharedpref_controller.dart';
 import 'package:gaiia_chat/models/chatroom_model.dart';
 import 'package:gaiia_chat/models/message_model.dart';
 import 'package:gaiia_chat/models/user_model.dart';
@@ -12,7 +16,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseController extends GetxController {
   late final FirebaseFirestore _firestore;
-  late final FirebaseAuth _firebaseAuth;
+  late final FirebaseAuth _firebaseAuth; 
 
   UserModel? currentUser;
   ChatRoom? currentRoom;
@@ -201,6 +205,7 @@ class FirebaseController extends GetxController {
     ChatRoom cr,
     Map<String, dynamic> messagemap,
     OpenAI? openai,
+    AudioPlayer player,
     // ChatGPT? chatgpt,
   ) async {
     var a = _firestore.collection('chatrooms').doc(cr.id);
@@ -244,11 +249,19 @@ class FirebaseController extends GetxController {
 
     var completion = await openai!.onChatCompletion(request: request);
 
+    Uint8List? messageAudio;
+    if(Get.find<SharedprefController>().isVoicing) {
+      messageAudio = await Get.find<HttpController>().generateSpeechFromPhrase(completion!.choices.first.message.content);
+    }
+
     await a.collection('messages').add({
       'sentbyhuman': false,
       'messagetext': completion!.choices.first.message.content,
       'timestamp': DateTime.now(),
     });
+    if(messageAudio != null) {
+      player.play(BytesSource(messageAudio));
+    }
   }
 
   Stream<List<Message>> getRoomMessagesStream(ChatRoom cr) {

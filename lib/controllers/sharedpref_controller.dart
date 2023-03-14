@@ -14,6 +14,7 @@ class SharedprefController extends GetxController {
   }
 
   Future<void> setVoicing(bool newValue) {
+    isVoicing = newValue;
     return prefs.setBool(voicingKey, newValue);
   }
 

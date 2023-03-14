@@ -11,7 +11,7 @@ class HttpController extends GetxController {
 
   Future<List<Map<String, dynamic>>> getVoices() async {
     var response = await http.get(Uri.parse('$baseUrl/voices'), headers: {
-      'xi-api-key': elevenLabs_apiKey,
+      'xi-api-key': elevenLabsApiKey,
     });
     var decresponse = json.decode(response.body);
     List<Map<String, dynamic>> res = [];
@@ -28,8 +28,8 @@ class HttpController extends GetxController {
   //Merlin: bmtTy0kLjUiTeam6zbRp
 
   Future<Uint8List> generateSpeechFromPhrase(String message) async {
-    var response = await http.post(Uri.parse('$baseUrl/text-to-speech/bmtTy0kLjUiTeam6zbRp'), headers: {
-      'xi-api-key': elevenLabs_apiKey,
+    var response = await http.post(Uri.parse('$baseUrl/text-to-speech/EXAVITQu4vr4xnSDxMaL'), headers: {
+      'xi-api-key': elevenLabsApiKey,
       'content-type': 'application/json',
       'accept': 'audio/mpeg',
     }, body: json.encode({
