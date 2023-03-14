@@ -85,11 +85,27 @@ class _ConversationScreenState extends State<ConversationScreen> {
             const SizedBox(
               width: 8,
             ),
-            Text(
-              'GAIIA',
+            Text.rich(
+              const TextSpan(children: [
+                TextSpan(
+                  text: 'G',
+                  style: TextStyle(
+                    color: secondary,
+                  ),
+                ),
+                TextSpan(text: 'A', style:  TextStyle(
+                    color: Color(0xFF2FD4FA),
+                  ),),
+                TextSpan(text: 'I', style: TextStyle(
+                    color: Color(0xFF0AFAA2),
+                  ),),
+                TextSpan(text: 'IA', style: TextStyle(
+                    color: secondary,
+                  ),)
+              ]),
+              // 'GAIIA',
               style: TextStyle(
                 fontSize: 42,
-                color: secondary,
                 shadows: [
                   Shadow(
                     offset: const Offset(0, 4),
