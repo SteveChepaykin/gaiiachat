@@ -59,7 +59,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                 isSpeaking
                     ? const CircularProgressIndicator()
                     : IconButton(
-                      padding: EdgeInsets.all(4),
+                      padding: const EdgeInsets.all(4),
                         onPressed: () async {
                           setState(() {
                             isSpeaking = true;

@@ -1,6 +1,3 @@
-import 'dart:typed_data';
-
-import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:gaiia_chat/controllers/firebase_controller.dart';
@@ -61,7 +58,7 @@ class _MyAppState extends State<MyApp> {
         fontFamily: 'Actor'
       ),
       debugShowCheckedModeBanner: false,
-      home: Placeholder(),
+      home: const Placeholder(),
       // home: StreamBuilder<UserModel?>(
       //   stream: Get.find<FirebaseController>().currentUser$.stream,
       //   builder: (context, snapshot) {

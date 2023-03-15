@@ -244,7 +244,7 @@ class FirebaseController extends GetxController {
     var request = ChatCompleteText(
       messages: messages,
       model: kChatGptTurbo0301Model,
-      maxToken: 100,
+      maxToken: 200,
     );
 
     var completion = await openai!.onChatCompletion(request: request);

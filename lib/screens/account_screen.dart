@@ -13,6 +13,8 @@ class AccountScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: secondary,
+        title: const Text('Account'),
         actions: [
           IconButton(
             onPressed: () async {
@@ -20,7 +22,6 @@ class AccountScreen extends StatelessWidget {
             },
             icon: const Icon(
               Icons.logout,
-              color: secondary,
             ),
           ),
         ],
@@ -34,7 +35,7 @@ class AccountScreen extends StatelessWidget {
               const Text('Your email:'),
               Text(
                 fc.currentUser!.email,
-                style: TextStyle(fontSize: 20),
+                style: const TextStyle(fontSize: 20),
               ),
             ],
           ),

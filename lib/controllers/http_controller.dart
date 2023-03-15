@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
-import 'package:gaiia_chat/models/message_model.dart';
+import 'package:gaiia_chat/controllers/sharedpref_controller.dart';
 import 'package:gaiia_chat/resources/api.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -28,7 +27,7 @@ class HttpController extends GetxController {
   //Merlin: bmtTy0kLjUiTeam6zbRp
 
   Future<Uint8List> generateSpeechFromPhrase(String message) async {
-    var response = await http.post(Uri.parse('$baseUrl/text-to-speech/EXAVITQu4vr4xnSDxMaL'), headers: {
+    var response = await http.post(Uri.parse('$baseUrl/text-to-speech/${Get.find<SharedprefController>().voiceId}'), headers: {
       'xi-api-key': elevenLabsApiKey,
       'content-type': 'application/json',
       'accept': 'audio/mpeg',

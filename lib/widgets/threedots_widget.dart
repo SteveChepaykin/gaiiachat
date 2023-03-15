@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gaiia_chat/resources/colors.dart';
 
 class ThreeDots extends StatefulWidget {
   const ThreeDots({super.key});
