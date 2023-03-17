@@ -27,19 +27,33 @@ class HttpController extends GetxController {
   //Merlin: bmtTy0kLjUiTeam6zbRp
 
   Future<Uint8List> generateSpeechFromPhrase(String message) async {
-    var response = await http.post(Uri.parse('$baseUrl/text-to-speech/${Get.find<SharedprefController>().voiceId}'), headers: {
-      'xi-api-key': elevenLabsApiKey,
-      'content-type': 'application/json',
-      'accept': 'audio/mpeg',
-    }, body: json.encode({
-      "text": message,
-      "voice_settings": {
-        "stability": 0,
-        "similarity_boost": 0,
-      },
-    }));
+    var response = await http.post(Uri.parse('$baseUrl/text-to-speech/${Get.find<SharedprefController>().voiceId}'),
+        headers: {
+          'xi-api-key': elevenLabsApiKey,
+          'content-type': 'application/json',
+          'accept': 'audio/mpeg',
+        },
+        body: json.encode({
+          "text": message,
+          "voice_settings": {
+            "stability": 0,
+            "similarity_boost": 0,
+          },
+        }));
 
     Uint8List audioresponse = response.bodyBytes;
     return audioresponse;
+  }
+
+  Future<String> completeChat(List<Map<String, dynamic>> messages) async {
+    var response = await http.post(
+      Uri.parse('http://www.chepaykin.org:8185/chat'),
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: json.encode(messages),
+    );
+    var decresponse = json.decode(response.body);
+    return decresponse['message'];
   }
 }

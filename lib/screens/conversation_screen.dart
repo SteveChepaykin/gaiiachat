@@ -1,8 +1,10 @@
 // import 'dart:html';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:gaiia_chat/controllers/firebase_controller.dart';
 import 'package:gaiia_chat/models/message_model.dart';
+import 'package:gaiia_chat/screens/map_screen.dart';
 import 'package:gaiia_chat/widgets/gaiiadrawer_widget.dart';
 // import 'package:gaiia_chat/models/message_model.dart';
 import 'package:gaiia_chat/widgets/inputfield_widget.dart';
@@ -21,6 +23,7 @@ class ConversationScreen extends StatefulWidget {
 class _ConversationScreenState extends State<ConversationScreen> {
   final FirebaseController fc = Get.find<FirebaseController>();
   final AudioPlayer audioPlayer = AudioPlayer();
+  final MapController mapcont = MapController(initMapWithUserPosition: true);
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +74,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
       // ),
       appBar: AppBar(
         iconTheme: const IconThemeData(color: secondary),
+        // leading: IconButton(
+        //   onPressed: () {
+        //     Get.to(() => MapScreen(mapcont));
+        //   },
+        //   icon: const Icon(Icons.map_rounded),
+        // ),
         elevation: 0,
         backgroundColor: Colors.transparent,
         centerTitle: true,
@@ -93,15 +102,24 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     color: secondary,
                   ),
                 ),
-                TextSpan(text: 'A', style:  TextStyle(
+                TextSpan(
+                  text: 'A',
+                  style: TextStyle(
                     color: Color(0xFF2FD4FA),
-                  ),),
-                TextSpan(text: 'I', style: TextStyle(
+                  ),
+                ),
+                TextSpan(
+                  text: 'I',
+                  style: TextStyle(
                     color: Color(0xFF0AFAA2),
-                  ),),
-                TextSpan(text: 'IA', style: TextStyle(
+                  ),
+                ),
+                TextSpan(
+                  text: 'IA',
+                  style: TextStyle(
                     color: secondary,
-                  ),)
+                  ),
+                )
               ]),
               // 'GAIIA',
               style: TextStyle(
@@ -122,6 +140,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         updateui: () {
           setState(() {});
         },
+        mapcontroller: mapcont,
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 10, left: 20, right: 20),

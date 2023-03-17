@@ -16,7 +16,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseController extends GetxController {
   late final FirebaseFirestore _firestore;
-  late final FirebaseAuth _firebaseAuth; 
+  late final FirebaseAuth _firebaseAuth;
 
   UserModel? currentUser;
   ChatRoom? currentRoom;
@@ -228,7 +228,7 @@ class FirebaseController extends GetxController {
     //   'timestamp': DateTime.now(),
     // });
 
-    var roommes = await getRoomMessages(cr);
+    var roommes = await getRoomLastMessages(cr);
     var messages = roommes
         .map((message) => {
               'role': message.sentByHuman ? 'user' : 'assistant',
@@ -237,29 +237,40 @@ class FirebaseController extends GetxController {
         .toList();
 
     messages.insert(0, {
-              'role': 'system',
-              'content': 'You are a helpful assistant. Your name is GAIIA.',
-            });
+      'role': 'system',
+      'content': 'You are a helpful assistant. Your name is GAIIA.',
+    });
 
-    var request = ChatCompleteText(
-      messages: messages,
-      model: kChatGptTurbo0301Model,
-      maxToken: 200,
-    );
+    // var request = ChatCompleteText(
+    //   messages: messages,
+    //   model: kChatGptTurbo0301Model,
+    //   maxToken: 200,
+    // );
 
-    var completion = await openai!.onChatCompletion(request: request);
+    // var completion;
+
+    // try {
+    //   completion = await openai!.onChatCompletion(request: request);
+    // } catch (e) {
+    //   print(e);
+    // }
+
+    var response = await Get.find<HttpController>().completeChat(messages);
 
     Uint8List? messageAudio;
-    if(Get.find<SharedprefController>().isVoicing) {
-      messageAudio = await Get.find<HttpController>().generateSpeechFromPhrase(completion!.choices.first.message.content);
+    if (Get.find<SharedprefController>().isVoicing) {
+      // messageAudio = await Get.find<HttpController>().generateSpeechFromPhrase(completion!.choices.first.message.content);
+      messageAudio = await Get.find<HttpController>().generateSpeechFromPhrase(response);
+
     }
 
     await a.collection('messages').add({
       'sentbyhuman': false,
-      'messagetext': completion!.choices.first.message.content,
+      // 'messagetext': completion!.choices.first.message.content,
+      'messagetext': response,
       'timestamp': DateTime.now(),
     });
-    if(messageAudio != null) {
+    if (messageAudio != null) {
       player.play(BytesSource(messageAudio));
     }
   }
@@ -280,12 +291,16 @@ class FirebaseController extends GetxController {
     });
   }
 
-  Future<List<Message>> getRoomMessages(ChatRoom cr) async {
-    var docs = await _firestore.collection('chatrooms').doc(cr.id).collection('messages').get();
+  Future<List<Message>> getRoomLastMessages(ChatRoom cr) async {
+    var docs = await _firestore.collection('chatrooms')
+      .doc(cr.id).collection('messages')
+      .orderBy('timestamp')
+      .limitToLast(10)
+      .get();
     var messages = docs.docs.map((e) => Message.fromMap(e.id, e.data())).toList();
-    messages.sort((m1, m2) {
-      return m1.timeSent.compareTo(m2.timeSent);
-    });
+    // messages.sort((m1, m2) {
+    //   return m1.timeSent.compareTo(m2.timeSent);
+    // });
     return messages;
   }
 }

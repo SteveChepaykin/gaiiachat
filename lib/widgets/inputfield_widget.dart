@@ -23,8 +23,8 @@ class ChatInputField extends StatefulWidget {
 
 class _ChatInputFieldState extends State<ChatInputField> {
   TextEditingController inputcontroller = TextEditingController();
-
-  final openAi = OpenAI.instance.build(token: apiKey);
+  // OpenAI oaiinstance = OpenAI.instance;
+  late final OpenAI openAi;
   bool waitingAnswer = false;
 
   final SpeechToText stt = SpeechToText();
@@ -32,6 +32,16 @@ class _ChatInputFieldState extends State<ChatInputField> {
 
   @override
   void initState() {
+    // String token = oaiinstance.getToken();
+    // openAi = oaiinstance.build(token: token);
+    openAi = OpenAI.instance.build(
+    token: apiKey,
+    baseOption: HttpSetup(
+      receiveTimeout: const Duration(
+        seconds: 60,
+      ),
+    ),
+  );
     initSST();
     super.initState();
   }
@@ -149,56 +159,58 @@ class _ChatInputFieldState extends State<ChatInputField> {
                       //       },
                     ),
                   ),
-                  if(inputcontroller.text == '') ElevatedButton(
-                    onPressed: waitingAnswer
-                        ? null
-                        : sttenabled
-                            ? () {
-                                stt.isNotListening ? startListen() : stopListen();
-                              }
-                            : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: secondary,
-                      fixedSize: const Size(25, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40),
+                  if (inputcontroller.text == '')
+                    ElevatedButton(
+                      onPressed: waitingAnswer
+                          ? null
+                          : sttenabled
+                              ? () {
+                                  stt.isNotListening ? startListen() : stopListen();
+                                }
+                              : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: secondary,
+                        fixedSize: const Size(25, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
                       ),
+                      child: Icon(stt.isNotListening ? Icons.mic : Icons.mic_off),
                     ),
-                    child: Icon(stt.isNotListening ? Icons.mic : Icons.mic_off),
-                  ),
-                  if(inputcontroller.text != '') ElevatedButton(
-                    onPressed: waitingAnswer
-                        ? null
-                        : () async {
-                            setState(() {
-                              waitingAnswer = true;
-                            });
-                            Get.find<FirebaseController>()
-                                .addMessage(
-                              widget.cr,
-                              {'messagetext': inputcontroller.text},
-                              openAi,
-                              widget.ap,
-                            )
-                                .whenComplete(
-                              () {
-                                setState(() {
-                                  waitingAnswer = false;
-                                  inputcontroller.clear();
-                                });
-                              },
-                            );
-                            // inputcontroller.clear();
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: secondary,
-                      fixedSize: const Size(25, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40),
+                  if (inputcontroller.text != '')
+                    ElevatedButton(
+                      onPressed: waitingAnswer
+                          ? null
+                          : () async {
+                              setState(() {
+                                waitingAnswer = true;
+                              });
+                              Get.find<FirebaseController>()
+                                  .addMessage(
+                                widget.cr,
+                                {'messagetext': inputcontroller.text},
+                                openAi,
+                                widget.ap,
+                              )
+                                  .whenComplete(
+                                () {
+                                  setState(() {
+                                    waitingAnswer = false;
+                                    inputcontroller.clear();
+                                  });
+                                },
+                              );
+                              // inputcontroller.clear();
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: secondary,
+                        fixedSize: const Size(25, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
                       ),
+                      child: const Icon(Icons.send),
                     ),
-                    child: const Icon(Icons.send),
-                  ),
                 ],
               ),
             ),
