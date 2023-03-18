@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gaiia_chat/controllers/http_controller.dart';
 import 'package:gaiia_chat/controllers/sharedpref_controller.dart';
 import 'package:gaiia_chat/models/chatroom_model.dart';
+import 'package:gaiia_chat/models/geomark_model.dart';
 import 'package:gaiia_chat/models/message_model.dart';
 import 'package:gaiia_chat/models/user_model.dart';
 import 'package:gaiia_chat/screens/boarding_screen.dart';
@@ -302,5 +303,22 @@ class FirebaseController extends GetxController {
     //   return m1.timeSent.compareTo(m2.timeSent);
     // });
     return messages;
+  }
+
+  Future<GeoMark> addGeoMark(Map<String, dynamic> map) async {
+    var doc = await _firestore.collection('geomarks').add({
+      'lat': map['lat'],
+      'lon': map['lon'],
+      'description': map['desc'],
+    });
+    var d = await doc.get();
+    GeoMark gm = GeoMark(d.id, d.data()!);
+    return gm;
+  }
+
+  Future<List<GeoMark>> getGeoMarks() async {
+    var docs = await _firestore.collection('geomarks').get();
+    var marks = docs.docs.map((e) => GeoMark(e.id, e.data())).toList();
+    return marks;
   }
 }

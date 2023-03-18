@@ -2,8 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:gaiia_chat/controllers/firebase_controller.dart';
 import 'package:gaiia_chat/controllers/message_controller.dart';
+import 'package:gaiia_chat/models/geomark_model.dart';
 import 'package:gaiia_chat/resources/colors.dart';
+import 'package:gaiia_chat/widgets/specialelevatedbutton.dart';
 import 'package:get/get.dart';
 
 class MapScreen extends StatefulWidget {
@@ -18,20 +21,28 @@ class _MapScreenState extends State<MapScreen> {
   // late final MapController mapcont;
   late Timer? _timer;
 
-  bool ispick = false;
+  final TextEditingController geotextcont = TextEditingController();
+  List<GeoMark> marks = [];
 
   @override
   void initState() {
-    _timer = Timer(Duration(milliseconds: 2000), () {
-      for (GeoPoint gp in Get.find<MessageController>().messages) {
-        print(gp);
-        widget.controller.addMarker(gp);
-      }
-      _timer?.cancel();
+    _timer = Timer(const Duration(milliseconds: 2000), () {
+      getPointsFromFB().whenComplete(
+        () => _timer?.cancel(),
+      );
+      // _timer?.cancel();
     });
     // mapcont = MapController(initMapWithUserPosition: true);
     widget.controller.listenerMapSingleTapping.addListener(onSingleTapping);
     super.initState();
+  }
+
+  Future<void> getPointsFromFB() async {
+    List<GeoMark> fbmarks = await Get.find<FirebaseController>().getGeoMarks();
+    for (GeoMark gp in fbmarks) {
+      widget.controller.addMarker(gp.geoPoint);
+    }
+    marks = fbmarks;
   }
 
   @override
@@ -53,33 +64,61 @@ class _MapScreenState extends State<MapScreen> {
         minZoomLevel: 6,
         isPicker: false,
         onGeoPointClicked: (point) {
-          // StaticPositionGeoPoint p = StaticPositionGeoPoint('asdasd', MarkerIcon(icon: Icon(Icons.location_pin),), )
-          // setState(() {
-          //   points.add(point);
-          // });
-          print(point.latitude);
-          print(point.longitude);
+          GeoMark m = marks.firstWhere(
+            (element) => element.geoPoint == point,
+          );
+          Get.bottomSheet(
+            BottomSheet(
+              onClosing: () {
+                // setState(() {});
+              },
+              builder: (context) => Padding(
+                padding: const EdgeInsets.all(20),
+                child: Text(m.description),
+              ),
+            ),
+          );
         },
       ),
-      // floatingActionButton: FloatingActionButton(onPressed: !ispick ? () {
-      //   setState(() {
-      //     ispick = !ispick;
-      //   });
-      // } : () async {
-      //   var gp = await mapcont.centerMap;
-      //   mapcont.addMarker(gp);
-      //   setState(() {
-      //     ispick = !ispick;
-      //   });
-      // }, child: Icon(ispick ? Icons.place : Icons.abc),),
     );
   }
 
   void onSingleTapping() {
     if (widget.controller.listenerMapSingleTapping.value != null) {
-      Get.find<MessageController>().addMessage(widget.controller.listenerMapSingleTapping.value!);
-      widget.controller.addMarker(widget.controller.listenerMapSingleTapping.value!);
-      // setState(() {});
+      Get.bottomSheet(
+        BottomSheet(
+          onClosing: () {
+            // setState(() {});
+          },
+          builder: (context) => Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              children: [
+                TextField(
+                  controller: geotextcont,
+                  decoration: const InputDecoration(border: OutlineInputBorder()),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                SpecialElevatedButton(
+                  action: () async {
+                    var gm = await Get.find<FirebaseController>().addGeoMark({
+                      'lat': widget.controller.listenerMapSingleTapping.value!.latitude,
+                      'lon': widget.controller.listenerMapSingleTapping.value!.longitude,
+                      'desc': geotextcont.text,
+                    });
+                    widget.controller.addMarker(gm.geoPoint);
+                    marks.add(gm);
+                    Get.back();
+                  },
+                  child: const Text('Add geo mark'),
+                )
+              ],
+            ),
+          ),
+        ),
+      );
     }
   }
 }
