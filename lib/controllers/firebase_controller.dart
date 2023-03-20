@@ -258,20 +258,39 @@ class FirebaseController extends GetxController {
 
     var response = await Get.find<HttpController>().completeChat(messages);
 
+    DocumentReference<Map<String, dynamic>> mesdoc;
     Uint8List? messageAudio;
-    if (Get.find<SharedprefController>().isVoicing) {
-      // messageAudio = await Get.find<HttpController>().generateSpeechFromPhrase(completion!.choices.first.message.content);
-      messageAudio = await Get.find<HttpController>().generateSpeechFromPhrase(response);
 
-    }
+    // if (!Get.find<SharedprefController>().isVoicing) {
+    //   mesdoc = await a.collection('messages').add({
+    //     'sentbyhuman': false,
+    //     'messagetext': response,
+    //     'timestamp': DateTime.now(),
+    //   });
+
+    //   messageAudio = await Get.find<HttpController>().generateSpeechFromPhrase(response);
+
+    //   await mesdoc.update({'audio': messageAudio.toList()});
+    // } else {
+    //   messageAudio = await Get.find<HttpController>().generateSpeechFromPhrase(response);
+
+    //   await a.collection('messages').add({
+    //     'sentbyhuman': false,
+    //     'messagetext': response,
+    //     'timestamp': DateTime.now(),
+    //     'audio': messageAudio.toList(),
+    //   });
+    //   player.play(BytesSource(messageAudio));
+    // }
+    messageAudio = await Get.find<HttpController>().generateSpeechFromPhrase(response);
 
     await a.collection('messages').add({
-      'sentbyhuman': false,
-      // 'messagetext': completion!.choices.first.message.content,
-      'messagetext': response,
-      'timestamp': DateTime.now(),
-    });
-    if (messageAudio != null) {
+        'sentbyhuman': false,
+        'messagetext': response,
+        'timestamp': DateTime.now(),
+        'audio': messageAudio.toList(),
+      });
+    if(Get.find<SharedprefController>().isVoicing) {
       player.play(BytesSource(messageAudio));
     }
   }
@@ -293,11 +312,7 @@ class FirebaseController extends GetxController {
   }
 
   Future<List<Message>> getRoomLastMessages(ChatRoom cr) async {
-    var docs = await _firestore.collection('chatrooms')
-      .doc(cr.id).collection('messages')
-      .orderBy('timestamp')
-      .limitToLast(10)
-      .get();
+    var docs = await _firestore.collection('chatrooms').doc(cr.id).collection('messages').orderBy('timestamp').limitToLast(10).get();
     var messages = docs.docs.map((e) => Message.fromMap(e.id, e.data())).toList();
     // messages.sort((m1, m2) {
     //   return m1.timeSent.compareTo(m2.timeSent);
@@ -310,6 +325,7 @@ class FirebaseController extends GetxController {
       'lat': map['lat'],
       'lon': map['lon'],
       'description': map['desc'],
+      'layer': map['layer'],
     });
     var d = await doc.get();
     GeoMark gm = GeoMark(d.id, d.data()!);

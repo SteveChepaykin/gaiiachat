@@ -4,6 +4,7 @@ class GeoMark {
   final String id;
   late final GeoPoint geoPoint;
   late final String description;
+  late final String layer;
 
   GeoMark(this.id, Map<String, dynamic> map) {
     description = map['description'] ?? '';
@@ -12,7 +13,8 @@ class GeoMark {
     } else {
       throw 'NO GEO DATA IN GEOMARK $id';
     }
+    layer = map['layer'] ?? (throw 'NEED A LAYER IN GEOMARK $id');
   }
 
-  GeoMark.fromGeoPoint(this.id, this.geoPoint, this.description);
+  GeoMark.fromGeoPoint(this.id, this.geoPoint, this.description, this.layer);
 }

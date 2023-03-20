@@ -74,12 +74,11 @@ class _MessageWidgetState extends State<MessageWidget> {
                       : IconButton(
                           padding: const EdgeInsets.all(4),
                           onPressed: () async {
-                            setState(() {
-                              isSpeaking = true;
-                            });
-                            Uint8List audio = await Get.find<HttpController>().generateSpeechFromPhrase(widget.message.messagetext);
-                            if (widget.player.state != PlayerState.playing) {
-                              widget.player.play(BytesSource(audio)).whenComplete(() {
+                            if (widget.player.state != PlayerState.playing && widget.message.audioBytes != null) {
+                              setState(() {
+                                isSpeaking = true;
+                              });
+                              widget.player.play(BytesSource(widget.message.audioBytes!)).whenComplete(() {
                                 setState(() {
                                   isSpeaking = false;
                                 });
