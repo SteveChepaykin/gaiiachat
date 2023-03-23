@@ -43,7 +43,7 @@ class _SigninScreenState extends State<SigninScreen> {
         print(deepLink.userInfo);
       }
     } catch (e) {
-      print(e);
+      throw 'GOT AN ERROR IN DEEPLINKING: $e';
     }
   }
 

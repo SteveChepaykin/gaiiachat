@@ -4,10 +4,10 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:gaiia_chat/controllers/http_controller.dart';
+import 'package:gaiia_chat/controllers/lrucashe_controller.dart';
 import 'package:gaiia_chat/controllers/sharedpref_controller.dart';
 import 'package:gaiia_chat/models/message_model.dart';
 import 'package:gaiia_chat/resources/colors.dart';
-import 'package:gaiia_chat/resources/messages_demo.dart';
 import 'package:get/get.dart';
 
 class MessageWidget extends StatefulWidget {
@@ -74,11 +74,13 @@ class _MessageWidgetState extends State<MessageWidget> {
                       : IconButton(
                           padding: const EdgeInsets.all(4),
                           onPressed: () async {
-                            if (widget.player.state != PlayerState.playing && widget.message.audioBytes != null) {
+                            if (widget.player.state != PlayerState.playing) {
                               setState(() {
                                 isSpeaking = true;
                               });
-                              widget.player.play(BytesSource(widget.message.audioBytes!)).whenComplete(() {
+                              // Uint8List audio = await Get.find<HttpController>().generateSpeechFromPhrase(widget.message.messagetext);
+                              Uint8List audio = await Get.find<LruCacheController>().getAudioFromCache(widget.message);
+                              widget.player.play(BytesSource(audio)).whenComplete(() {
                                 setState(() {
                                   isSpeaking = false;
                                 });

@@ -1,9 +1,10 @@
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:gaiia_chat/controllers/firebase_controller.dart';
 import 'package:gaiia_chat/controllers/http_controller.dart';
+import 'package:gaiia_chat/controllers/lrucashe_controller.dart';
 import 'package:gaiia_chat/controllers/message_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:gaiia_chat/controllers/sharedpref_controller.dart';
@@ -23,12 +24,14 @@ void main() async {
   var fcont = FirebaseController();
   var httpcont = HttpController();
   var prefcont = SharedprefController();
+  var lrucont = LruCacheController(size: 10, cont: httpcont);
   // fcont.listenUserAuthState();
   await prefcont.init();
   Get.put<MessageController>(mescont);
   Get.put<FirebaseController>(fcont);
   Get.put<HttpController>(httpcont);
   Get.put<SharedprefController>(prefcont);
+  Get.put<LruCacheController>(lrucont);
   // final ap = AudioPlayer();
   // Uint8List audio = await httpcont.generateSpeechFromPhrase('HELLO');
   // ap.play(BytesSource(audio));

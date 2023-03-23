@@ -257,9 +257,23 @@ class FirebaseController extends GetxController {
     // }
 
     var response = await Get.find<HttpController>().completeChat(messages);
-
-    DocumentReference<Map<String, dynamic>> mesdoc;
     Uint8List? messageAudio;
+    
+    if (Get.find<SharedprefController>().isVoicing) {
+      // messageAudio = await Get.find<HttpController>().generateSpeechFromPhrase(completion!.choices.first.message.content);
+      messageAudio = await Get.find<HttpController>().generateSpeechFromPhrase(response);
+
+    }
+
+    await a.collection('messages').add({
+      'sentbyhuman': false,
+      // 'messagetext': completion!.choices.first.message.content,
+      'messagetext': response,
+      'timestamp': DateTime.now(),
+    });
+    if (messageAudio != null) {
+      player.play(BytesSource(messageAudio));
+    }
 
     // if (!Get.find<SharedprefController>().isVoicing) {
     //   mesdoc = await a.collection('messages').add({
@@ -282,17 +296,18 @@ class FirebaseController extends GetxController {
     //   });
     //   player.play(BytesSource(messageAudio));
     // }
-    messageAudio = await Get.find<HttpController>().generateSpeechFromPhrase(response);
 
-    await a.collection('messages').add({
-        'sentbyhuman': false,
-        'messagetext': response,
-        'timestamp': DateTime.now(),
-        'audio': messageAudio.toList(),
-      });
-    if(Get.find<SharedprefController>().isVoicing) {
-      player.play(BytesSource(messageAudio));
-    }
+    // messageAudio = await Get.find<HttpController>().generateSpeechFromPhrase(response);
+
+    // await a.collection('messages').add({
+    //     'sentbyhuman': false,
+    //     'messagetext': response,
+    //     'timestamp': DateTime.now(),
+    //     'audio': messageAudio.toList(),
+    //   });
+    // if(Get.find<SharedprefController>().isVoicing) {
+    //   player.play(BytesSource(messageAudio));
+    // }
   }
 
   Stream<List<Message>> getRoomMessagesStream(ChatRoom cr) {

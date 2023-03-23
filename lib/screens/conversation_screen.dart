@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:gaiia_chat/controllers/firebase_controller.dart';
 import 'package:gaiia_chat/models/message_model.dart';
-import 'package:gaiia_chat/screens/map_screen.dart';
 import 'package:gaiia_chat/widgets/gaiiadrawer_widget.dart';
 // import 'package:gaiia_chat/models/message_model.dart';
 import 'package:gaiia_chat/widgets/inputfield_widget.dart';
