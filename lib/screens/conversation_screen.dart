@@ -1,14 +1,16 @@
 // import 'dart:html';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:gaiia_chat/controllers/firebase_controller.dart';
+import 'package:gaiia_chat/controllers/sharedpref_controller.dart';
 import 'package:gaiia_chat/models/message_model.dart';
 import 'package:gaiia_chat/widgets/gaiiadrawer_widget.dart';
 // import 'package:gaiia_chat/models/message_model.dart';
 import 'package:gaiia_chat/widgets/inputfield_widget.dart';
 import 'package:gaiia_chat/widgets/message_widget.dart';
 import 'package:get/get.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../resources/colors.dart';
 
@@ -22,7 +24,20 @@ class ConversationScreen extends StatefulWidget {
 class _ConversationScreenState extends State<ConversationScreen> {
   final FirebaseController fc = Get.find<FirebaseController>();
   final AudioPlayer audioPlayer = AudioPlayer();
-  final MapController mapcont = MapController(initMapWithUserPosition: true);
+  // final MapController mapcont = MapController(initMapWithUserPosition: true);
+  final MapController mapcont = MapController();
+  // final MapOptions options = MapOptions(
+  //   center: LatLng(
+  //     Get.find<SharedprefController>().initPos.latitude,
+  //     Get.find<SharedprefController>().initPos.longitude,
+  //   ),
+  //   minZoom: 2,
+  //   maxZoom: 18,
+  //   onTap: (pos, point) {
+  //     print(point.latitude);
+  //   },
+  //   interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+  // );
 
   @override
   Widget build(BuildContext context) {

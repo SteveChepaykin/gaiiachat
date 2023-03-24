@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:flutter_map/flutter_map.dart';
+// import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+
 import 'package:gaiia_chat/resources/colors.dart';
 import 'package:gaiia_chat/screens/account_screen.dart';
 import 'package:gaiia_chat/screens/map_screen.dart';
+import 'package:gaiia_chat/screens/map_screen_new.dart';
 import 'package:gaiia_chat/screens/settings_screen.dart';
 import 'package:get/get.dart';
 
@@ -37,7 +40,7 @@ class GaiiaDrawer extends StatelessWidget {
             ),
             title: const Text('Map'),
             onTap: () {
-              Get.to(() => MapScreen(mapcontroller));
+              Get.to(() => MapScreenNew(mapcontroller));
             },
           ),
           ListTile(

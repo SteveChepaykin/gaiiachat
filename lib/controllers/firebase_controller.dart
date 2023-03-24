@@ -258,7 +258,7 @@ class FirebaseController extends GetxController {
 
     var response = await Get.find<HttpController>().completeChat(messages);
     Uint8List? messageAudio;
-    
+
     if (Get.find<SharedprefController>().isVoicing) {
       // messageAudio = await Get.find<HttpController>().generateSpeechFromPhrase(completion!.choices.first.message.content);
       messageAudio = await Get.find<HttpController>().generateSpeechFromPhrase(response);
