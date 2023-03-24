@@ -1,9 +1,11 @@
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:geolocator/geolocator.dart';
 
 class SharedprefController extends GetxController {
   late bool isVoicing;
   late String voiceId;
+  late Position initPos;
 
   static const String voicingKey = 'isVoicing';
   static const String voiceKey = 'voice';
@@ -14,6 +16,7 @@ class SharedprefController extends GetxController {
     prefs = await SharedPreferences.getInstance();
     isVoicing = getVoicing()!;
     voiceId = getVoice()!;
+    initPos = await Geolocator.getCurrentPosition();
   }
 
   Future<void> setVoicing(bool newValue) {
