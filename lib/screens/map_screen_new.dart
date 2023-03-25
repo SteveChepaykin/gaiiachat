@@ -13,7 +13,7 @@ import 'package:latlong2/latlong.dart';
 class MapScreenNew extends StatefulWidget {
   final MapController controller;
   // final String filter;
-  const MapScreenNew(this.controller,{super.key});
+  const MapScreenNew(this.controller, {super.key});
 
   @override
   State<MapScreenNew> createState() => _MapScreenNewState();
@@ -39,22 +39,17 @@ class _MapScreenNewState extends State<MapScreenNew> {
     });
 
     options = MapOptions(
-    center: LatLng(
-      Get.find<SharedprefController>().initPos.latitude,
-      Get.find<SharedprefController>().initPos.longitude,
-    ),
-    minZoom: 2,
-    maxZoom: 18,
-    onTap: (pos, point) {
-      onSingleTapping(point);
-    },
-    interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-  );
-
-    // getPointsFromFB();
-
-    // mapcont = MapController(initMapWithUserPosition: true);
-    // widget.controller.mapEventStream;
+      center: LatLng(
+        Get.find<SharedprefController>().initPos.latitude,
+        Get.find<SharedprefController>().initPos.longitude,
+      ),
+      minZoom: 2,
+      maxZoom: 18,
+      onTap: (pos, point) {
+        onSingleTapping(point);
+      },
+      interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+    );
     super.initState();
   }
 
@@ -90,21 +85,6 @@ class _MapScreenNewState extends State<MapScreenNew> {
 
   @override
   Widget build(BuildContext context) {
-    // Color clr = markerColor(filter);
-    // List<GeoMark> filteredmarks = marks;
-    // if (canreload) {
-    //   List<GeoMark> filteredmarks = filter != 'all'
-    //       ? marks
-    //           .where(
-    //             (gm) => gm.layer == filter,
-    //           )
-    //           .toList()
-    //       : marks;
-    //   widget.controller.removeMarkers(marks.map((e) => e.geoPoint).toList());
-    //   for (GeoMark gp in filteredmarks) {
-    //     widget.controller.addMarker(gp.geoPoint);
-    //   }
-    // }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: secondary,
@@ -155,79 +135,86 @@ class _MapScreenNewState extends State<MapScreenNew> {
             urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
             userAgentPackageName: 'dev.fleaflet.flutter_map.example',
           ),
-          // MarkerLayer(
-          //   markers: [
-          //     ...marks.where((element) => element.layer == filter).map(
-          //           (e) => Marker(
-          //             point: LatLng(e.point.latitude, e.point.longitude),
-          //             width: 80,
-          //             height: 80,
-          //             builder: (context) => Icon(
-          //               Icons.place,
-          //               color: markerColor(filter),
-          //             ),
-          //           ),
-          //         ),
-          //   ],
-          // ),
-          if (filter == 'all')
-            MarkerLayer(
-              markers: [
-                ...marks.map(
-                  (e) => Marker(
-                    point: LatLng(e.point.latitude, e.point.longitude),
-                    width: 80,
-                    height: 80,
-                    builder: (context) => const Icon(
-                      Icons.place,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          if (filter == 'ecological')
-            MarkerLayer(
-              markers: [
-                ...marks.where((element) => element.layer == 'ecological').map(
-                      (e) => Marker(
-                        point: LatLng(e.point.latitude, e.point.longitude),
-                        width: 80,
-                        height: 80,
-                        builder: (context) => const Icon(
+          MarkerLayer(
+            markers: [
+              ...marks.where((element) => element.layer == filter).map(
+                    (e) => Marker(
+                      point: LatLng(e.point.latitude, e.point.longitude),
+                      width: 80,
+                      height: 80,
+                      builder: (context) => GestureDetector(
+                        onTap: () {
+                          onShowInfo(e.point);
+                        },
+                        child: Icon(
                           Icons.place,
-                          color: Colors.green,
+                          color: markerColor(filter),
                         ),
                       ),
                     ),
-              ],
-            ),
-          if (filter == 'information')
-            MarkerLayer(
-              markers: [
-                ...marks.where((element) => element.layer == 'information').map(
-                      (e) => Marker(
-                        point: LatLng(e.point.latitude, e.point.longitude),
-                        width: 80,
-                        height: 80,
-                        builder: (context) => const Icon(Icons.place, color: Colors.red),
-                      ),
-                    ),
-              ],
-            ),
-          if (filter == 'social')
-            MarkerLayer(
-              markers: [
-                ...marks.where((element) => element.layer == 'social').map(
-                      (e) => Marker(
-                        point: LatLng(e.point.latitude, e.point.longitude),
-                        width: 80,
-                        height: 80,
-                        builder: (context) => const Icon(Icons.place, color: Colors.blue),
-                      ),
-                    ),
-              ],
-            ),
+                  ),
+            ],
+          ),
+          // if (filter == 'all')
+          //   MarkerLayer(
+          //     markers: [
+          //       ...marks.map(
+          //         (e) => Marker(
+          //           point: LatLng(e.point.latitude, e.point.longitude),
+          //           width: 80,
+          //           height: 80,
+          //           builder: (context) => GestureDetector(
+          //             onTap: () {
+          //               onShowInfo(e.point);
+          //             },
+          //             child: const Icon(
+          //               Icons.place,
+          //               color: Colors.black,
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // if (filter == 'ecological')
+          //   MarkerLayer(
+          //     markers: [
+          //       ...marks.where((element) => element.layer == 'ecological').map(
+          //             (e) => Marker(
+          //               point: LatLng(e.point.latitude, e.point.longitude),
+          //               width: 80,
+          //               height: 80,
+          //               builder: (context) => const Icon(Icons.place, color: Colors.green),
+          //             ),
+          //           ),
+          //     ],
+          //   ),
+          // if (filter == 'information')
+          //   MarkerLayer(
+          //     markers: [
+          //       ...marks.where((element) => element.layer == 'information').map(
+          //             (e) => Marker(
+          //               point: LatLng(e.point.latitude, e.point.longitude),
+          //               width: 80,
+          //               height: 80,
+          //               builder: (context) => const Icon(Icons.place, color: Colors.red),
+          //             ),
+          //           ),
+          //     ],
+          //   ),
+          // if (filter == 'social')
+          //   MarkerLayer(
+          //     markers: [
+          //       ...marks.where((element) => element.layer == 'social').map(
+          //             (e) => Marker(
+          //               point: LatLng(e.point.latitude, e.point.longitude),
+          //               width: 80,
+          //               height: 80,
+          //               builder: (context) => const Icon(Icons.place, color: Colors.blue),
+          //             ),
+          //           ),
+          //     ],
+          //   ),
         ],
       ),
     );
@@ -282,6 +269,38 @@ class _MapScreenNewState extends State<MapScreenNew> {
                 fg: primary,
                 child: const Text('Add geo mark'),
               )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void onShowInfo(LatLng point) {
+    GeoMark m = marks.firstWhere(
+      (element) => element.point == point,
+    );
+    Get.bottomSheet(
+      BottomSheet(
+        onClosing: () {
+          // setState(() {});
+        },
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        builder: (context) => Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                m.description,
+                style: const TextStyle(fontSize: 16),
+              ),
+              const Spacer(),
             ],
           ),
         ),
